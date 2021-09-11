@@ -4,11 +4,16 @@ import { getSSOTicket } from "./services/sso/getSSOTicket";
 import { loginSSO } from "./services/sso/loginSSO";
 import { config } from "./configs";
 
-export const login = async (
-  username: string,
-  password: string,
-  mfa: string
-) => {
+export const login = async ({
+  username,
+  password,
+  mfa,
+}: {
+  username: string;
+  password: string;
+  mfa: string;
+  options: {};
+}) => {
   try {
     const url = await getLoginUrl();
     const { appid, _sign, callback } = URL.parse(url, true).query as {

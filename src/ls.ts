@@ -1,7 +1,6 @@
-import { pluck } from "ramda";
 import { listServices as getAllServices } from "./services/llp/listServices";
 
-export const listServices = async ({ page }: { page?: number }) => {
+export const ls = async ({ page }: { page?: number; options: {} }) => {
   try {
     const { list } = await getAllServices({ page });
 

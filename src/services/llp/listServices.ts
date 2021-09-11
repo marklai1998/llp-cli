@@ -1,10 +1,16 @@
-import { config, getEnv, getRegion } from "./../../configs/index";
+import { getEnv, getIdentifier, getRegion } from "./../../configs/index";
 import { llpClient } from "../apiClient";
 import { APIResponse } from "../../types/apiResponse";
 import { Region } from "../../constants/region";
 import { StringNumber } from "../../types/value";
 
-export const listServices = async ({ page = 1 }: { page?: number }) => {
+export const listServices = async ({
+  page = 1,
+  name = "",
+}: {
+  page?: number;
+  name?: string;
+}) => {
   const res = await llpClient.get<
     APIResponse<{
       page_sum: number;
@@ -46,14 +52,14 @@ export const listServices = async ({ page = 1 }: { page?: number }) => {
       _a: "getMybusList",
       num_per_page: 20,
       page_num: page,
-      keyword: "",
+      keyword: name,
       domain_id: "",
       level: "",
       uid: "",
       app_type: "",
       type: "",
       access_type: "",
-      identifier: config.get("identifier"),
+      identifier: getIdentifier(),
       env: getEnv(),
       region: getRegion(),
     },
