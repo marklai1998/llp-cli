@@ -20,5 +20,5 @@ export const config = new Conf<{
 }>({ schema });
 
 export const getIdentifier = () => config.get("identifier");
-export const getRegion = () => config.get("env") || Env.STG;
-export const getEnv = () => config.get("region") || Region.SG;
+export const getEnv = () => config.get("env") || Env.STG;
+export const getRegion = () => config.get("region") || Region.SG;

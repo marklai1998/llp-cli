@@ -5,8 +5,10 @@ export const listServices = async ({ page }: { page?: number }) => {
   try {
     const { list } = await getAllServices({ page });
 
-    console.log(pluck("service", list));
+    list.forEach(({ service }) => {
+      console.log(service);
+    });
   } catch (e) {
-    console.error("Failed to list services", e);
+    console.error("Failed to list services:", e);
   }
 };

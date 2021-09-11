@@ -1,26 +1,23 @@
+import { env } from "./env";
 import { listServices } from "./listServices";
 import { login } from "./login";
-import { Command } from "commander";
+import vorpal from "vorpal";
 import { whoAmI } from "./whoAmI";
+import { checkout } from "./checkout";
 
-const main = async () => {
-  const cli = new Command();
-  cli.version("1.0.0");
+const Vorpal = vorpal();
 
-  cli
-    .command("login")
-    .argument("<username>")
-    .argument("<password>")
-    .argument("<mfa>")
-    .action(login);
+Vorpal.command("login <username> <password> <mfa>").action(login);
 
-  cli.command("whoami").action(whoAmI);
+Vorpal.command("whoami").action(whoAmI);
 
-  cli.command("env").action(listServices);
+Vorpal.command("env").action(env);
 
-  cli.command("ls").option("-p, --page", "Page").action(listServices);
+Vorpal.command("ls").option("-p, --page", "Page").action(listServices);
 
-  await cli.parseAsync(process.argv);
-};
+Vorpal.command("checkout")
+  .option("-e, --env <env>", "Environment")
+  .option("-r, --region <region>", "Region")
+  .action(checkout);
 
-main();
+Vorpal.delimiter("llp$").show();
