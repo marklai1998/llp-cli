@@ -1,5 +1,5 @@
-import { APIResponse } from "../types/apiResponse";
-import { ssoClient } from "./apiClient";
+import { APIResponse } from "../../types/apiResponse";
+import { ssoClient } from "../apiClient";
 import queryString from "query-string";
 
 export const getSSOTicket = async ({
@@ -11,7 +11,7 @@ export const getSSOTicket = async ({
   callback: string;
   sign: string;
 }) => {
-  const result = await ssoClient.post<
+  const res = await ssoClient.post<
     APIResponse<{
       callback: string;
       appid: number;
@@ -43,7 +43,7 @@ export const getSSOTicket = async ({
     }
   );
 
-  if (result.data.ret !== 0) throw new Error(result.data.msg);
+  if (res.data.ret !== 0) throw new Error(res.data.msg);
 
-  return result.data.data.ssoTicket;
+  return res.data.data.ssoTicket;
 };

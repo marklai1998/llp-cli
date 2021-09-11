@@ -1,9 +1,10 @@
-import { APIResponse } from "../types/apiResponse";
-import { llpClient } from "./apiClient";
+import { getEnv, getRegion } from "./../../configs/index";
+import { APIResponse } from "../../types/apiResponse";
+import { llpClient } from "../apiClient";
 import queryString from "query-string";
 
 export const getLoginUrl = async () => {
-  const result = await llpClient.post<
+  const res = await llpClient.post<
     APIResponse<{
       identifier: "";
       login_url: string;
@@ -12,8 +13,8 @@ export const getLoginUrl = async () => {
   >(
     "/index.php",
     queryString.stringify({
-      env: "4",
-      region: "3",
+      env: getEnv(),
+      region: getRegion(),
     }),
     {
       params: {
@@ -23,5 +24,5 @@ export const getLoginUrl = async () => {
     }
   );
 
-  return result.data.data.login_url;
+  return res.data.data.login_url;
 };

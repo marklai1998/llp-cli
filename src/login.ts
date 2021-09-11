@@ -1,7 +1,8 @@
-import { getLoginUrl } from "./services/getLoginUrl";
+import { getLoginUrl } from "./services/llp/getLoginUrl";
 import URL from "url";
-import { getSSOTicket } from "./services/getSSOTicket";
-import { loginSSO } from "./services/loginSSO";
+import { getSSOTicket } from "./services/sso/getSSOTicket";
+import { loginSSO } from "./services/sso/loginSSO";
+import { config } from "./configs";
 
 export const login = async (
   username: string,
@@ -27,7 +28,9 @@ export const login = async (
       otp: mfa,
     });
 
-    console.log(user);
+    console.log("logged in as: ", user.username);
+
+    config.set("identifier", user.identifier);
   } catch (e) {
     console.error("Failed to login", e);
   }

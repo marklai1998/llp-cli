@@ -1,5 +1,5 @@
-import { APIResponse } from "../types/apiResponse";
-import { ssoClient } from "./apiClient";
+import { APIResponse } from "../../types/apiResponse";
+import { ssoClient } from "../apiClient";
 import md5 from "md5";
 import queryString from "query-string";
 
@@ -16,7 +16,7 @@ export const loginSSO = async ({
   password: string;
   otp: string;
 }) => {
-  const result = await ssoClient.post<
+  const res = await ssoClient.post<
     APIResponse<{
       identifier: string;
       account: string;
@@ -54,10 +54,10 @@ export const loginSSO = async ({
     }
   );
 
-  if (result.data.ret !== 0) throw new Error(result.data.msg);
+  if (res.data.ret !== 0) throw new Error(res.data.msg);
 
   return {
-    username: result.data.data.account,
-    identifier: result.data.data.identifier,
+    username: res.data.data.account,
+    identifier: res.data.data.identifier,
   };
 };
