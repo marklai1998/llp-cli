@@ -150,5 +150,5 @@ export const deploy: Action = async ({
     return;
   }
 
-  console.log("Finish Deploy");
+  console.log("Deploy Successfully");
 };
