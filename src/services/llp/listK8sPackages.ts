@@ -2,7 +2,6 @@ import { getEnv, getIdentifier, getRegion } from "../../configs/index";
 import { llpClient } from "../apiClient";
 import { APIResponse } from "../../types/apiResponse";
 import { StringNumber } from "../../types/value";
-import { logout } from "../../utils/logout";
 
 export const listK8sPackages = async ({ id }: { id: number }) => {
   const res = await llpClient.get<

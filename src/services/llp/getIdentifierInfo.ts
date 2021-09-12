@@ -2,7 +2,6 @@ import { getEnv, getRegion } from "./../../configs/index";
 import { APIResponse } from "../../types/apiResponse";
 import { llpClient } from "../apiClient";
 import queryString from "query-string";
-import { logout } from "../../utils/logout";
 
 export const getIdentifierInfo = async ({
   identifier,

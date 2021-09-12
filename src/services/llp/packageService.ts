@@ -3,7 +3,6 @@ import { Env } from "../../constants/env";
 import { APIResponse } from "../../types/apiResponse";
 import { llpClient } from "../apiClient";
 import queryString from "query-string";
-import { logout } from "../../utils/logout";
 
 export const packageService = async ({
   jobId,

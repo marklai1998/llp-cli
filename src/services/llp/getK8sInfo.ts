@@ -2,7 +2,6 @@ import { StringNumber } from "./../../types/value";
 import { getEnv, getRegion, getIdentifier } from "../../configs/index";
 import { APIResponse } from "../../types/apiResponse";
 import { llpClient } from "../apiClient";
-import { logout } from "../../utils/logout";
 
 export const getK8sInfo = async ({ id }: { id: number }) => {
   const res = await llpClient.get<

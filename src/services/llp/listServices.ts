@@ -3,7 +3,6 @@ import { llpClient } from "../apiClient";
 import { APIResponse } from "../../types/apiResponse";
 import { Region } from "../../constants/region";
 import { StringNumber } from "../../types/value";
-import { logout } from "../../utils/logout";
 
 export const listServices = async ({
   page = 1,

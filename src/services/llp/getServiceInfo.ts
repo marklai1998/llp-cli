@@ -3,7 +3,6 @@ import { APIResponse } from "../../types/apiResponse";
 import { llpClient } from "../apiClient";
 import { StringNumber } from "../../types/value";
 import { Region } from "../../constants/region";
-import { logout } from "../../utils/logout";
 
 export const getServicesInfo = async ({ id }: { id: number }) => {
   const res = await llpClient.get<

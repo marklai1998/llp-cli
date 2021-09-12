@@ -3,7 +3,6 @@ import { getEnv, getIdentifier, getRegion } from "../../configs/index";
 import { llpClient } from "../apiClient";
 import { APIResponse } from "../../types/apiResponse";
 import { K8sDeployStatus } from "../../constants/k8sDeployStatus";
-import { logout } from "../../utils/logout";
 
 export const getK8sDeployStatus = async ({
   deploymentId,

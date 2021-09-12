@@ -1,7 +1,6 @@
 import { getIdentifier, getEnv, getRegion } from "./../../configs/index";
 import { APIResponse } from "../../types/apiResponse";
 import { llpClient } from "../apiClient";
-import { logout } from "../../utils/logout";
 
 export const listServiceGitHistory = async ({
   id,

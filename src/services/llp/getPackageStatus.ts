@@ -4,7 +4,6 @@ import { APIResponse } from "../../types/apiResponse";
 import { Region } from "../../constants/region";
 import { StringNumber } from "../../types/value";
 import { Env } from "../../constants/env";
-import { logout } from "../../utils/logout";
 
 export const getPackageStatus = async ({ buildId }: { buildId: number }) => {
   const res = await llpClient.get<
