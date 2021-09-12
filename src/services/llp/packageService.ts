@@ -19,6 +19,7 @@ export const packageService = async ({
     queryString.stringify({
       branch: "global/stg",
       version: version,
+      // TODO: understand what this type for
       release_type: 0,
       rel_type: 1,
       rel_des: description,
