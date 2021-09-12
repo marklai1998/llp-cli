@@ -94,8 +94,12 @@ const build = async ({ id }: { id: number }) => {
         status !== PackageStatus.RUNNING &&
         status !== PackageStatus.PENDING
       ) {
-        step.forEach(({ name }) => {
-          packageSpinnies.success(name);
+        step.forEach(({ name, status }) => {
+          if (
+            status === PackageStatus.RUNNING ||
+            status === PackageStatus.PENDING
+          )
+            packageSpinnies.success(name);
         });
       }
     }
@@ -175,8 +179,12 @@ const deployK8s = async ({ id }: { id: number }) => {
         info.status !== K8sDeployStatus.RUNNING &&
         info.status !== K8sDeployStatus.PENDING
       ) {
-        stage.forEach(({ stage }) => {
-          deploySpinnies.success(stage);
+        stage.forEach(({ stage, status }) => {
+          if (
+            status === K8sDeployStatus.RUNNING ||
+            status === K8sDeployStatus.PENDING
+          )
+            deploySpinnies.success(stage);
         });
       }
     }
