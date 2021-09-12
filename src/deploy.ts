@@ -35,10 +35,12 @@ export const deploy: Action = async ({
 
   console.log("Deploy service:", service);
 
+  const targetBranch = getDefaultBranch(getEnv());
+
   const history = await listServiceGitHistory({
     id: Number(id),
     gitLink: git_link,
-    branch: getDefaultBranch(getEnv()),
+    branch: targetBranch,
   });
 
   if (isEmpty(history)) {
@@ -48,6 +50,7 @@ export const deploy: Action = async ({
 
   const deployCommit = history[0];
 
+  console.log("Target branch:", targetBranch);
   console.log("Packaging:", deployCommit.replace(/(\r\n|\n|\r)/gm, ""));
 
   const [hash, description] = split(" - ", deployCommit);
@@ -140,6 +143,8 @@ export const deploy: Action = async ({
 
     await sleep(5000);
   }
+
+  Vorpal.ui.redraw.done();
 
   const { info } = await getK8sDeployStatus({
     deploymentId: rel_id,
