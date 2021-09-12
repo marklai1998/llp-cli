@@ -54,8 +54,6 @@ export const loginSSO = async ({
     }
   );
 
-  if (res.data.ret !== 0) throw new Error(res.data.msg);
-
   return {
     username: res.data.data.account,
     identifier: res.data.data.identifier,

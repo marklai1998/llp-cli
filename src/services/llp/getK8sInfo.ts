@@ -49,12 +49,5 @@ export const getK8sInfo = async ({ id }: { id: number }) => {
     },
   });
 
-  if (res.data.ret !== 0) {
-    if (res.data.ret === 50002) {
-      logout();
-    }
-    throw new Error(res.data.msg);
-  }
-
   return res.data.data;
 };

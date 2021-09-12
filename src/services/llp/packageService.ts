@@ -38,12 +38,5 @@ export const packageService = async ({
     }
   );
 
-  if (res.data.ret !== 0) {
-    if (res.data.ret === 50002) {
-      logout();
-    }
-    throw new Error(res.data.msg);
-  }
-
   return res.data.data;
 };

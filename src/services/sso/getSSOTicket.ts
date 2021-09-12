@@ -43,7 +43,5 @@ export const getSSOTicket = async ({
     }
   );
 
-  if (res.data.ret !== 0) throw new Error(res.data.msg);
-
   return res.data.data.ssoTicket;
 };
