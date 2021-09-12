@@ -1,10 +1,13 @@
 import { getEnv, getIdentifier, getRegion } from "../../configs/index";
 import { llpClient } from "../apiClient";
 import { APIResponse } from "../../types/apiResponse";
-import { StringNumber } from "../../types/value";
 import { Package } from "../../types/package";
 
-export const listAvailablePackages = async ({ id }: { id: number }) => {
+export const listAvailablePackages = async ({
+  serviceId,
+}: {
+  serviceId: number;
+}) => {
   const res = await llpClient.get<
     APIResponse<{
       page_sum: number;
@@ -15,7 +18,7 @@ export const listAvailablePackages = async ({ id }: { id: number }) => {
       _g: "newdeployment",
       _m: "rel",
       _a: "getRelPackage",
-      bus_id: id,
+      bus_id: serviceId,
       env: getEnv(),
       page_num: 1,
       num_per_page: 6,

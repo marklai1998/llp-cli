@@ -3,11 +3,11 @@ import { APIResponse } from "../../types/apiResponse";
 import { llpClient } from "../apiClient";
 
 export const listServiceGitHistory = async ({
-  id,
+  serviceId,
   gitLink,
   branch,
 }: {
-  id: number;
+  serviceId: number;
   gitLink: string;
   branch: string;
 }) => {
@@ -16,7 +16,7 @@ export const listServiceGitHistory = async ({
       _g: "newdeployment",
       _m: "git",
       _a: "switchBranchOrTag",
-      bus_id: id,
+      bus_id: serviceId,
       git_link: gitLink,
       branch,
       identifier: getIdentifier(),

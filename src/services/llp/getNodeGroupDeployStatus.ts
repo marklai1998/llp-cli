@@ -8,7 +8,7 @@ import {
   GroupJobStatus,
 } from "../../constants/groupDeployStatus";
 
-export const getGroupDeployStatus = async ({
+export const getNodeGroupDeployStatus = async ({
   deploymentId,
 }: {
   deploymentId: number;

@@ -3,12 +3,12 @@ import { APIResponse } from "../../types/apiResponse";
 import { llpClient } from "../apiClient";
 import queryString from "query-string";
 
-export const deployK8sPackage = async ({
-  id,
+export const deployPackageToK8s = async ({
+  serviceId,
   k8sId,
   packageId,
 }: {
-  id: number;
+  serviceId: number;
   k8sId: number;
   packageId: number;
 }) => {
@@ -16,7 +16,7 @@ export const deployK8sPackage = async ({
     "/index.php",
     queryString.stringify({
       id: k8sId,
-      bus_id: id,
+      bus_id: serviceId,
       package_id: packageId,
       task_id: "",
       rel_type: { isTrusted: true },

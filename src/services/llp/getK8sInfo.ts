@@ -3,7 +3,7 @@ import { getEnv, getRegion, getIdentifier } from "../../configs/index";
 import { APIResponse } from "../../types/apiResponse";
 import { llpClient } from "../apiClient";
 
-export const getK8sInfo = async ({ id }: { id: number }) => {
+export const getK8sInfo = async ({ serviceId }: { serviceId: number }) => {
   const res = await llpClient.get<
     APIResponse<{
       appInfo: {
@@ -41,7 +41,7 @@ export const getK8sInfo = async ({ id }: { id: number }) => {
       _g: "docker",
       _m: "app",
       _a: "getDockerAppDeploymentStatus",
-      bus_id: id,
+      bus_id: serviceId,
       identifier: getIdentifier(),
       env: getEnv(),
       region: getRegion(),

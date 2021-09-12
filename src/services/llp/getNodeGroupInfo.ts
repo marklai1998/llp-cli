@@ -1,9 +1,13 @@
-import { StringNumber } from "./../../types/value";
+import { StringNumber } from "../../types/value";
 import { getEnv, getRegion, getIdentifier } from "../../configs/index";
 import { APIResponse } from "../../types/apiResponse";
 import { llpClient } from "../apiClient";
 
-export const getGroupInfo = async ({ id }: { id: number }) => {
+export const getNodeGroupInfo = async ({
+  serviceId,
+}: {
+  serviceId: number;
+}) => {
   const res = await llpClient.get<
     APIResponse<{
       openSlb: number;
@@ -26,7 +30,7 @@ export const getGroupInfo = async ({ id }: { id: number }) => {
       _g: "newdeployment",
       _m: "busnode",
       _a: "getBusNodeSlb",
-      bus_id: id,
+      bus_id: serviceId,
       identifier: getIdentifier(),
       env: getEnv(),
       region: getRegion(),

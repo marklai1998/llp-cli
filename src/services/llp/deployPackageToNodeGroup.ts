@@ -3,19 +3,19 @@ import { APIResponse } from "../../types/apiResponse";
 import { llpClient } from "../apiClient";
 import queryString from "query-string";
 
-export const deployGroupPackage = async ({
-  id,
+export const deployPackageToNodeGroup = async ({
+  serviceId,
   nodeIds,
   packageId,
 }: {
-  id: number;
+  serviceId: number;
   nodeIds: number[];
   packageId: number;
 }) => {
   const res = await llpClient.post<APIResponse<{ rel_id: number }>>(
     "/index.php",
     queryString.stringify({
-      bus_id: id,
+      bus_id: serviceId,
       package_id: packageId,
       node_ids: nodeIds,
       task_id: "",

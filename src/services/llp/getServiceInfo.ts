@@ -4,7 +4,7 @@ import { llpClient } from "../apiClient";
 import { StringNumber } from "../../types/value";
 import { Region } from "../../constants/region";
 
-export const getServicesInfo = async ({ id }: { id: number }) => {
+export const getServicesInfo = async ({ serviceId }: { serviceId: number }) => {
   const res = await llpClient.get<
     APIResponse<{
       id: StringNumber;
@@ -109,7 +109,7 @@ export const getServicesInfo = async ({ id }: { id: number }) => {
       _g: "newdeployment",
       _m: "bus",
       _a: "getOneBusInfo",
-      bus_id: id,
+      bus_id: serviceId,
       identifier: getIdentifier(),
       env: getEnv(),
       region: getRegion(),

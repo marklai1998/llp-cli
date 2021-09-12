@@ -11,7 +11,7 @@ import { getPackageStatus } from "./services/llp/getPackageStatus";
 import { PackageStatus } from "./constants/packageStatus";
 import { sleep } from "./utils/sleep";
 import { Action } from "vorpal";
-import { deployK8sPackage } from "./services/llp/deployK8sPackage";
+import { deployPackageToK8s } from "./services/llp/deployPackageToK8s";
 import { getK8sDeployStatus } from "./services/llp/getK8sDeployStatus";
 import { K8sDeployStatus } from "./constants/k8sDeployStatus";
 import { getK8sInfo } from "./services/llp/getK8sInfo";
@@ -20,16 +20,30 @@ import { doneMsg, errorMsg } from "./utils/console";
 import { Timer } from "timer-node";
 import Multispinner from "multispinner";
 import { dots } from "cli-spinners";
-import { deployGroupPackage } from "./services/llp/deployGroupPackage";
-import { getGroupDeployStatus } from "./services/llp/getGroupDeployStatus";
-import { getGroupInfo } from "./services/llp/getGroupInfo";
+import { deployPackageToNodeGroup } from "./services/llp/deployPackageToNodeGroup";
+import { getNodeGroupDeployStatus } from "./services/llp/getNodeGroupDeployStatus";
+import { getNodeGroupInfo } from "./services/llp/getNodeGroupInfo";
 import { Package } from "./types/package";
 
-const build = async ({ id, branch }: { id: number; branch: string }) => {
-  const { job_id, git_link } = await getServicesInfo({ id: Number(id) });
+const spinnerOptions = {
+  ...dots,
+  clear: true,
+};
+
+const build = async ({
+  serviceId,
+  branch,
+}: {
+  serviceId: number;
+  branch: string;
+}) => {
+  const timer = new Timer({ label: "build" });
+  timer.start();
+
+  const { job_id, git_link } = await getServicesInfo({ serviceId });
 
   const history = await listServiceGitHistory({
-    id: Number(id),
+    serviceId,
     gitLink: git_link,
     branch: branch,
   });
@@ -60,10 +74,10 @@ const build = async ({ id, branch }: { id: number; branch: string }) => {
       {}
     );
 
-    const packageSpinnies = new Multispinner(packageSpinnerStage, {
-      ...dots,
-      clear: true,
-    });
+    const packageSpinnies = new Multispinner(
+      packageSpinnerStage,
+      spinnerOptions
+    );
 
     packageSpinnies.on("done", async () => {
       const { status } = await getPackageStatus({ buildId: build_id });
@@ -102,21 +116,31 @@ const build = async ({ id, branch }: { id: number; branch: string }) => {
       }
     }
   });
+
+  doneMsg(`Packaged successfully in ${timer.ms()}ms`);
+  timer.stop();
 };
 
 const deployK8s = async ({
-  id,
-  k8sId,
-  packageId,
+  serviceId,
+  deployPackage,
 }: {
-  id: number;
-  k8sId: number;
-  packageId: number;
+  serviceId: number;
+  deployPackage: Package;
 }) => {
-  const { rel_id: deploymentId } = await deployK8sPackage({
-    id: id,
-    k8sId: k8sId,
-    packageId: packageId,
+  const timer = new Timer({ label: "deployK8s" });
+  timer.start();
+
+  const {
+    appInfo: { id: k8sId },
+  } = await getK8sInfo({ serviceId });
+
+  console.log("Deploying(k8s): ", deployPackage.filename + "\n");
+
+  const { rel_id: deploymentId } = await deployPackageToK8s({
+    serviceId,
+    k8sId: Number(k8sId),
+    packageId: Number(deployPackage.package_id),
   });
 
   await new Promise<void>(async (resolve, reject) => {
@@ -127,10 +151,7 @@ const deployK8s = async ({
       {}
     );
 
-    const deploySpinnies = new Multispinner(deploySpinnerStage, {
-      ...dots,
-      clear: true,
-    });
+    const deploySpinnies = new Multispinner(deploySpinnerStage, spinnerOptions);
 
     deploySpinnies.on("done", async () => {
       const { info } = await getK8sDeployStatus({ deploymentId });
@@ -169,24 +190,39 @@ const deployK8s = async ({
       }
     }
   });
+
+  doneMsg(`Deployed k8s successfully in ${timer.ms()}ms`);
+  timer.stop();
 };
 
-const deployGroup = async ({
-  id,
-  nodeIds,
-  packageId,
+const deployNodeGroup = async ({
+  serviceId,
+  deployPackage,
 }: {
-  id: number;
-  nodeIds: number[];
-  packageId: number;
+  serviceId: number;
+  deployPackage: Package;
 }) => {
-  const { rel_id: deploymentId } = await deployGroupPackage({
-    id: id,
+  const timer = new Timer({ label: "deployNodeGroup" });
+  timer.start();
+
+  const { node_list } = await getNodeGroupInfo({ serviceId });
+
+  if (isEmpty(node_list)) {
+    errorMsg("Empty node list");
+    return;
+  }
+
+  console.log("Deploying(node group): ", deployPackage.filename + "\n");
+
+  const nodeIds = pluck("id", values(node_list)).map(Number);
+
+  const { rel_id: deploymentId } = await deployPackageToNodeGroup({
+    serviceId,
     nodeIds,
-    packageId: packageId,
+    packageId: Number(deployPackage.package_id),
   });
 
-  const { rel_node_list } = await getGroupDeployStatus({ deploymentId });
+  const { rel_node_list } = await getNodeGroupDeployStatus({ deploymentId });
 
   const deploySpinnerStage = rel_node_list.reduce(
     (acc, { node_info: { host } }) => ({ ...acc, [host]: host }),
@@ -202,7 +238,7 @@ const deployGroup = async ({
     deploySpinnies.on("done", async () => {
       const {
         rel_record_info: { status },
-      } = await getGroupDeployStatus({ deploymentId });
+      } = await getNodeGroupDeployStatus({ deploymentId });
 
       if (status === GroupJobStatus.FAILED) {
         errorMsg("Deploy Failed");
@@ -217,9 +253,11 @@ const deployGroup = async ({
     while (true) {
       await sleep(5000);
 
-      const { rel_node_list, rel_record_info } = await getGroupDeployStatus({
-        deploymentId,
-      });
+      const { rel_node_list, rel_record_info } = await getNodeGroupDeployStatus(
+        {
+          deploymentId,
+        }
+      );
 
       rel_node_list.forEach(({ node_info: { host, status } }) => {
         switch (String(status)) {
@@ -240,92 +278,34 @@ const deployGroup = async ({
       }
     }
   });
-};
-
-const deployGroupStage = async ({
-  id,
-  deployPackage,
-  timer,
-}: {
-  id: number;
-  deployPackage: Package;
-  timer: Timer;
-}) => {
-  const { node_list } = await getGroupInfo({ id: id });
-
-  if (isEmpty(node_list)) {
-    errorMsg("Empty node list");
-    return;
-  }
-
-  console.log("Deploying(node group): ", deployPackage.filename + "\n");
-
-  const nodeIds = pluck("id", values(node_list)).map(Number);
-
-  await deployGroup({
-    id: id,
-    packageId: Number(deployPackage.package_id),
-    nodeIds,
-  });
 
   doneMsg(`Deployed node group successfully in ${timer.ms()}ms`);
-};
-
-const deployK8sStage = async ({
-  id,
-  deployPackage,
-  timer,
-}: {
-  id: number;
-  deployPackage: Package;
-  timer: Timer;
-}) => {
-  try {
-    const {
-      appInfo: { id: k8sId },
-    } = await getK8sInfo({ id: Number(id) });
-
-    console.log("Deploying(k8s): ", deployPackage.filename + "\n");
-    await deployK8s({
-      id: Number(id),
-      k8sId: Number(k8sId),
-      packageId: Number(deployPackage.package_id),
-    });
-
-    doneMsg(`Deployed k8s successfully in ${timer.ms()}ms`);
-  } catch (e) {
-    await deployGroupStage({ timer, id: Number(id), deployPackage });
-  }
+  timer.stop();
 };
 
 export const deploy: Action = async ({
   serviceName,
   options: { branch = getDefaultBranch(getEnv()), node, all },
 }: any) => {
-  const timer = new Timer({ label: "test-timer" });
+  const timer = new Timer({ label: "deploy" });
   timer.start();
 
   const serviceList = await listServices({ name: serviceName });
 
   if (isEmpty(serviceList.list)) {
-    console.log(clc.bgRed("Error"), "unknown service");
+    errorMsg("unknown service");
     return;
   }
 
   const { id, service } = serviceList.list[0];
-
-  await build({ id: Number(id), branch });
-
-  doneMsg(`Packaged successfully in ${timer.ms()}ms`);
-
+  const serviceId = Number(id);
   console.log("Deploy service:", service);
 
-  timer.clear();
-  timer.start();
+  await build({ serviceId, branch });
 
   await sleep(3000);
 
-  const { list: packageList } = await listAvailablePackages({ id: Number(id) });
+  const { list: packageList } = await listAvailablePackages({ serviceId });
 
   if (isEmpty(packageList)) {
     errorMsg("Empty package list");
@@ -334,27 +314,22 @@ export const deploy: Action = async ({
 
   const deployPackage = packageList[0];
 
-  if (all) {
-    try {
-      await getK8sInfo({ id: Number(id) });
-
-      await deployK8sStage({ timer, id: Number(id), deployPackage });
-      await deployGroupStage({ timer, id: Number(id), deployPackage });
-    } catch (e) {
-      await deployGroupStage({ timer, id: Number(id), deployPackage });
-    }
-  } else if (node) {
-    await deployGroupStage({ timer, id: Number(id), deployPackage });
+  if (node) {
+    await deployNodeGroup({ serviceId, deployPackage });
   } else {
     try {
-      await getK8sInfo({ id: Number(id) });
+      await getK8sInfo({ serviceId });
 
-      await deployK8sStage({ timer, id: Number(id), deployPackage });
+      await deployK8s({ serviceId, deployPackage });
+      if (all) {
+        await deployNodeGroup({ serviceId, deployPackage });
+      }
     } catch (e) {
-      await deployGroupStage({ timer, id: Number(id), deployPackage });
+      // fallback to group deploy when k8s is not available
+      await deployNodeGroup({ serviceId, deployPackage });
     }
   }
 
-  doneMsg("Deploy completed\n");
+  doneMsg(`Deploy completed in ${timer.ms()}ms`);
   timer.stop();
 };
