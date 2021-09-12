@@ -67,7 +67,7 @@ const build = async ({ id }: { id: number }) => {
         errorMsg("Package Failed");
         reject();
       }
-      if (status >= PackageStatus.FINISHED) {
+      if (status === PackageStatus.FINISHED) {
         resolve();
       }
     });
@@ -146,10 +146,7 @@ const deployK8s = async ({ id }: { id: number }) => {
         errorMsg("Deploy Failed");
         reject();
       }
-      if (
-        info.status !== K8sDeployStatus.RUNNING &&
-        info.status !== K8sDeployStatus.PENDING
-      ) {
+      if (info.status === K8sDeployStatus.FINISHED) {
         resolve();
       }
     });
