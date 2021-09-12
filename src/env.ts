@@ -10,9 +10,9 @@ export const env = async () => {
   console.log({
     env: EnumValues.getNamesAndValues(Env).find(
       ({ value }) => value === currentEnv
-    ).name,
+    )?.name,
     region: EnumValues.getNamesAndValues(Region).find(
       ({ value }) => value === currentRegion
-    ).name,
+    )?.name,
   });
 };

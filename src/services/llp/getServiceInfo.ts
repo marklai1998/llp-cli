@@ -3,6 +3,7 @@ import { APIResponse } from "../../types/apiResponse";
 import { llpClient } from "../apiClient";
 import { StringNumber } from "../../types/value";
 import { Region } from "../../constants/region";
+import { logout } from "../../utils/logout";
 
 export const getServicesInfo = async ({ id }: { id: number }) => {
   const res = await llpClient.get<
@@ -116,7 +117,12 @@ export const getServicesInfo = async ({ id }: { id: number }) => {
     },
   });
 
-  if (res.data.ret !== 0) throw new Error(res.data.msg);
+  if (res.data.ret !== 0) {
+    if (res.data.ret === 50002) {
+      logout();
+    }
+    throw new Error(res.data.msg);
+  }
 
   return res.data.data;
 };

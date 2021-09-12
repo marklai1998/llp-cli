@@ -3,17 +3,9 @@ import URL from "url";
 import { getSSOTicket } from "./services/sso/getSSOTicket";
 import { loginSSO } from "./services/sso/loginSSO";
 import { config } from "./configs";
+import { Action } from "vorpal";
 
-export const login = async ({
-  username,
-  password,
-  mfa,
-}: {
-  username: string;
-  password: string;
-  mfa: string;
-  options: {};
-}) => {
+export const login: Action = async ({ username, password, mfa }: any) => {
   try {
     const url = await getLoginUrl();
     const { appid, _sign, callback } = URL.parse(url, true).query as {

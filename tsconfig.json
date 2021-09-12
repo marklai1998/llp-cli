@@ -1,5 +1,19 @@
 {
   "compilerOptions": {
-    "esModuleInterop": true
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "strict": true,
+    "target": "es2020",
+    "lib": ["dom", "dom.iterable", "es2020"],
+    "typeRoots": ["node_modules/@types"]
   }
 }

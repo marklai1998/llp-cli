@@ -2,6 +2,7 @@ import { getEnv, getIdentifier, getRegion } from "../../configs/index";
 import { llpClient } from "../apiClient";
 import { APIResponse } from "../../types/apiResponse";
 import { StringNumber } from "../../types/value";
+import { logout } from "../../utils/logout";
 
 export const listK8sPackages = async ({ id }: { id: number }) => {
   const res = await llpClient.get<
@@ -47,7 +48,12 @@ export const listK8sPackages = async ({ id }: { id: number }) => {
     },
   });
 
-  if (res.data.ret !== 0) throw new Error(res.data.msg);
+  if (res.data.ret !== 0) {
+    if (res.data.ret === 50002) {
+      logout();
+    }
+    throw new Error(res.data.msg);
+  }
 
   return res.data.data;
 };

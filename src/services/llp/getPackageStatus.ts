@@ -4,6 +4,7 @@ import { APIResponse } from "../../types/apiResponse";
 import { Region } from "../../constants/region";
 import { StringNumber } from "../../types/value";
 import { Env } from "../../constants/env";
+import { logout } from "../../utils/logout";
 
 export const getPackageStatus = async ({ buildId }: { buildId: number }) => {
   const res = await llpClient.get<
@@ -79,7 +80,12 @@ export const getPackageStatus = async ({ buildId }: { buildId: number }) => {
     },
   });
 
-  if (res.data.ret !== 0) throw new Error(res.data.msg);
+  if (res.data.ret !== 0) {
+    if (res.data.ret === 50002) {
+      logout();
+    }
+    throw new Error(res.data.msg);
+  }
 
   return res.data.data;
 };

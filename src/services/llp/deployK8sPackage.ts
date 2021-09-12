@@ -2,6 +2,7 @@ import { getEnv, getIdentifier, getRegion } from "../../configs/index";
 import { APIResponse } from "../../types/apiResponse";
 import { llpClient } from "../apiClient";
 import queryString from "query-string";
+import { logout } from "../../utils/logout";
 
 export const deployK8sPackage = async ({
   id,
@@ -34,7 +35,12 @@ export const deployK8sPackage = async ({
     }
   );
 
-  if (res.data.ret !== 0) throw new Error(res.data.msg);
+  if (res.data.ret !== 0) {
+    if (res.data.ret === 50002) {
+      logout();
+    }
+    throw new Error(res.data.msg);
+  }
 
   return res.data.data;
 };

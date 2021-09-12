@@ -3,6 +3,7 @@ import { llpClient } from "../apiClient";
 import { APIResponse } from "../../types/apiResponse";
 import { Region } from "../../constants/region";
 import { StringNumber } from "../../types/value";
+import { logout } from "../../utils/logout";
 
 export const listServices = async ({
   page = 1,
@@ -65,7 +66,12 @@ export const listServices = async ({
     },
   });
 
-  if (res.data.ret !== 0) throw new Error(res.data.msg);
+  if (res.data.ret !== 0) {
+    if (res.data.ret === 50002) {
+      logout();
+    }
+    throw new Error(res.data.msg);
+  }
 
   return res.data.data;
 };

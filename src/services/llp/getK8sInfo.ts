@@ -2,6 +2,7 @@ import { StringNumber } from "./../../types/value";
 import { getEnv, getRegion, getIdentifier } from "../../configs/index";
 import { APIResponse } from "../../types/apiResponse";
 import { llpClient } from "../apiClient";
+import { logout } from "../../utils/logout";
 
 export const getK8sInfo = async ({ id }: { id: number }) => {
   const res = await llpClient.get<
@@ -48,7 +49,12 @@ export const getK8sInfo = async ({ id }: { id: number }) => {
     },
   });
 
-  if (res.data.ret !== 0) throw new Error(res.data.msg);
+  if (res.data.ret !== 0) {
+    if (res.data.ret === 50002) {
+      logout();
+    }
+    throw new Error(res.data.msg);
+  }
 
   return res.data.data;
 };

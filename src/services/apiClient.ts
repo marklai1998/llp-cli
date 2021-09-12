@@ -18,5 +18,5 @@ llpClient.interceptors.response.use(
 
 export const ssoClient = axios.create({
   baseURL: "https://sso.huolala.work",
-  timeout: 2,
+  timeout: 3000,
 });

@@ -1,6 +1,7 @@
 import { getIdentifier, getEnv, getRegion } from "./../../configs/index";
 import { APIResponse } from "../../types/apiResponse";
 import { llpClient } from "../apiClient";
+import { logout } from "../../utils/logout";
 
 export const listServiceGitHistory = async ({
   id,
@@ -25,7 +26,12 @@ export const listServiceGitHistory = async ({
     },
   });
 
-  if (res.data.ret !== 0) throw new Error(res.data.msg);
+  if (res.data.ret !== 0) {
+    if (res.data.ret === 50002) {
+      logout();
+    }
+    throw new Error(res.data.msg);
+  }
 
   return res.data.data;
 };
