@@ -1,4 +1,4 @@
-import { Vorpal } from "./vorpalInstance";
+import { Vorpal } from "./utils/vorpalInstance";
 import { pluck } from "ramda";
 import { listServices } from "./services/llp/listServices";
 import { env } from "./env";
@@ -22,6 +22,7 @@ Vorpal.command("checkout")
   .action(checkout);
 
 Vorpal.command("deploy <serviceName>")
+  .option("-b, --branch <branch>", "Branch")
   .autocomplete({
     data: async (input?: string) => {
       const services = await listServices({ name: input });

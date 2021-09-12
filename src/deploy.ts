@@ -20,15 +20,13 @@ import { Timer } from "timer-node";
 import Multispinner from "multispinner";
 import { dots } from "cli-spinners";
 
-const build = async ({ id }: { id: number }) => {
+const build = async ({ id, branch }: { id: number; branch: string }) => {
   const { job_id, git_link } = await getServicesInfo({ id: Number(id) });
-
-  const targetBranch = getDefaultBranch(getEnv());
 
   const history = await listServiceGitHistory({
     id: Number(id),
     gitLink: git_link,
-    branch: targetBranch,
+    branch: branch,
   });
 
   if (isEmpty(history)) {
@@ -38,7 +36,7 @@ const build = async ({ id }: { id: number }) => {
 
   const deployCommit = history[0];
 
-  console.log("Target branch:", targetBranch);
+  console.log("Target branch:", branch);
 
   const [, description] = split(" - ", deployCommit);
   console.log("Packaging:", deployCommit.replace(/(\r\n|\n|\r)/gm, "") + "\n");
@@ -58,6 +56,7 @@ const build = async ({ id }: { id: number }) => {
 
     const packageSpinnies = new Multispinner(packageSpinnerStage, {
       ...dots,
+      clear: true,
     });
 
     packageSpinnies.on("done", async () => {
@@ -65,11 +64,10 @@ const build = async ({ id }: { id: number }) => {
 
       if (status === PackageStatus.FAILED) {
         errorMsg("Package Failed");
-        reject();
+        return reject();
       }
-      if (status === PackageStatus.FINISHED) {
-        resolve();
-      }
+
+      resolve();
     });
 
     packageSpinnies.on("error", () => {
@@ -94,12 +92,8 @@ const build = async ({ id }: { id: number }) => {
         status !== PackageStatus.RUNNING &&
         status !== PackageStatus.PENDING
       ) {
-        step.forEach(({ name, status }) => {
-          if (
-            status === PackageStatus.RUNNING ||
-            status === PackageStatus.PENDING
-          )
-            packageSpinnies.success(name);
+        step.forEach(({ name }) => {
+          packageSpinnies.success(name);
         });
       }
     }
@@ -139,6 +133,7 @@ const deployK8s = async ({ id }: { id: number }) => {
 
     const deploySpinnies = new Multispinner(deploySpinnerStage, {
       ...dots,
+      clear: true,
     });
 
     deploySpinnies.on("done", async () => {
@@ -148,11 +143,10 @@ const deployK8s = async ({ id }: { id: number }) => {
 
       if (info.status === K8sDeployStatus.FAILED) {
         errorMsg("Deploy Failed");
-        reject();
+        return reject();
       }
-      if (info.status === K8sDeployStatus.FINISHED) {
-        resolve();
-      }
+
+      resolve();
     });
 
     deploySpinnies.on("error", () => {
@@ -179,19 +173,18 @@ const deployK8s = async ({ id }: { id: number }) => {
         info.status !== K8sDeployStatus.RUNNING &&
         info.status !== K8sDeployStatus.PENDING
       ) {
-        stage.forEach(({ stage, status }) => {
-          if (
-            status === K8sDeployStatus.RUNNING ||
-            status === K8sDeployStatus.PENDING
-          )
-            deploySpinnies.success(stage);
+        stage.forEach(({ stage }) => {
+          deploySpinnies.success(stage);
         });
       }
     }
   });
 };
 
-export const deploy: Action = async ({ serviceName }: any) => {
+export const deploy: Action = async ({
+  serviceName,
+  options: { branch = getDefaultBranch(getEnv()) },
+}: any) => {
   const timer = new Timer({ label: "test-timer" });
   timer.start();
 
@@ -204,9 +197,8 @@ export const deploy: Action = async ({ serviceName }: any) => {
 
   const { id, service } = serviceList.list[0];
 
-  await build({ id: Number(id) });
+  await build({ id: Number(id), branch });
 
-  console.log("\n");
   doneMsg(`Packaged successfully in ${timer.ms()}ms`);
 
   console.log("Deploy service:", service);
@@ -218,9 +210,8 @@ export const deploy: Action = async ({ serviceName }: any) => {
 
   await deployK8s({ id: Number(id) });
 
-  console.log("\n");
   doneMsg(`Deployed successfully in ${timer.ms()}ms`);
 
-  doneMsg("Deploy completed");
+  doneMsg("Deploy completed\n");
   timer.stop();
 };
