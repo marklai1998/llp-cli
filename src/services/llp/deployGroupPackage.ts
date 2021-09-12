@@ -3,32 +3,34 @@ import { APIResponse } from "../../types/apiResponse";
 import { llpClient } from "../apiClient";
 import queryString from "query-string";
 
-export const deployK8sPackage = async ({
+export const deployGroupPackage = async ({
   id,
-  k8sId,
+  nodeIds,
   packageId,
 }: {
   id: number;
-  k8sId: number;
+  nodeIds: number[];
   packageId: number;
 }) => {
   const res = await llpClient.post<APIResponse<{ rel_id: number }>>(
     "/index.php",
     queryString.stringify({
-      id: k8sId,
       bus_id: id,
       package_id: packageId,
+      node_ids: nodeIds,
       task_id: "",
-      rel_type: { isTrusted: true },
+      // TODO: understand what this type for
+      rel_type: 1,
+      cluster_id: 0,
       identifier: getIdentifier(),
       env: getEnv(),
       region: getRegion(),
     }),
     {
       params: {
-        _g: "docker",
+        _g: "newdeployment",
         _m: "rel",
-        _a: "execDockerRel",
+        _a: "execGroupRel",
       },
     }
   );

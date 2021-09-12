@@ -31,7 +31,6 @@ export const getK8sDeployStatus = async ({
       env: getEnv(),
       region: getRegion(),
     }),
-
     {
       params: {
         _g: "docker",

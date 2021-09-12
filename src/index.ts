@@ -23,6 +23,8 @@ Vorpal.command("checkout")
 
 Vorpal.command("deploy <serviceName>")
   .option("-b, --branch <branch>", "Branch")
+  .option("-a, --all", "deploy k8s and node")
+  .option("-n, --node", "Deploy node group")
   .autocomplete({
     data: async (input?: string) => {
       const services = await listServices({ name: input });
