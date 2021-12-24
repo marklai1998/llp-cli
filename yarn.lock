@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@types/cli-color@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@types/cli-color/-/cli-color-2.0.1.tgz#9815147585a16ed5f1a408b5d0bb2bdb7fe552b6"
-  integrity sha512-BZTu+obe1b0aBwUPx7f51PjYDL570gKTeQItjJj6sQdCTNmmey+uLUb+WWJP2mtVYcEWSILwvv0/cyE1rsHgVQ==
+"@types/cli-color@2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@types/cli-color/-/cli-color-2.0.2.tgz#01bd593722a12c26ec84c170ab251fe2d35856c5"
+  integrity sha512-1ErQIcmNHtNViGKTtB/TIKqMkC2RkKI2nBneCr9hSCPo9H05g9VzjlaXPW3H0vaI8zFGjJZvSav+VKDKCtKgKA==
 
 "@types/cli-spinner@^0.2.1":
   version "0.2.1"
