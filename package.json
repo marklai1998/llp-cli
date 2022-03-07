@@ -34,7 +34,7 @@
   "devDependencies": {
     "@types/cli-color": "^2.0.1",
     "@types/cli-spinner": "^0.2.1",
-    "@types/md5": "^2.3.1",
+    "@types/md5": "2.3.2",
     "@types/node": "^16.9.1",
     "@types/ramda": "^0.27.44",
     "@types/vorpal": "^1.12.2",
