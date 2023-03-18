@@ -1057,9 +1057,9 @@ through@^2.3.6:
   integrity sha1-DdTJ/6q8NXlgsbckEV1+Doai4fU=
 
 timer-node@^5.0.5:
-  version "5.0.5"
-  resolved "https://registry.yarnpkg.com/timer-node/-/timer-node-5.0.5.tgz#1b364c5a36f9259d432fa9cef77549d1556babe2"
-  integrity sha512-a/RE0HITUQ8+BBqvGmSUycpsHHY4RLvdbzlUD53FtvvY8osjSMMeo/c4jfrcjVc+AK9d3SUGiUO5HwWIlKtFwQ==
+  version "5.0.7"
+  resolved "https://registry.yarnpkg.com/timer-node/-/timer-node-5.0.7.tgz#69710fc660c46884bec57135272f86883453b839"
+  integrity sha512-M1aP6ASmuVD0PSxl5fqjCAGY9WyND3DHZ8RwT5I8o7469XE53Lb5zbPai20Dhj7TProyaapfVj3TaT0P+LoSEA==
 
 timers-ext@^0.1.7:
   version "0.1.7"
